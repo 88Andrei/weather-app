@@ -55,7 +55,7 @@ namespace App\Api;
     return json_decode($result);
   }
 
-  private function getAll()
+  public function getAll()
   {
     $requestURL = $this->bildURL();
     $result = $this->sendRequest($requestURL);

@@ -14,7 +14,10 @@ use App\Http\Controllers\MainController;
 |
 */
 
-Route::get('/', [MainController::class , 'index'])->name('home');;
+Route::get('/', [MainController::class , 'index'])->name('home');
+Route::post('/location', [MainController::class , 'getWeatherByLocation'])->name('location');
+
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');
