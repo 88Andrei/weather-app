@@ -15,6 +15,10 @@
                     <x-nav-link :href="route('home')" :active="request()->routeIs('rates')">
                         {{ __('Home') }}
                     </x-nav-link>
+
+                    <x-nav-link :href="route('air')" :active="request()->routeIs('rates')">
+                        {{ __('Air pollution') }}
+                    </x-nav-link>
                 </div>
 
 

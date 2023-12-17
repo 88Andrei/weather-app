@@ -36,9 +36,9 @@ namespace App\Api;
     return new self($this->location, $unitsName, $this->format);
   }
 
-  public function getCurrent()
+  public function getHourly()
   {
-    return $this->getAll()->current;
+    return $this->getAll()->hourly;
   }
 
   public function getDaily()
