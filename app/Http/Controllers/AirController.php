@@ -9,16 +9,23 @@ use App\Http\Controllers\ChartController;
 
 class AirController extends Controller
 {
+  private $airAPI;
+  private $chart;
+
+  public function __construct()
+  {
+    $this->airAPI = new Air;
+    $this->chart = new ChartController;
+  }
+
   public function index()
   {
-    $airAPI = new Air;
-    $airData = $airAPI->location('Dortmund')->start('1606488670')->end('1606747870')->getAll();
-    $chart = new ChartController;
-    $chartAir = $chart->getAirChart($airData->list);
+    $airData = $this->airAPI->location('Dortmund')->start('1606488670')->end('1606747870')->getAll();
+    $airChart = $this->chart->getAirChart($airData->list);
 
     return view('air' , [
       'airDatas' => $airData->list,
-      'chart' => $chartAir,
+      'chart' => $airChart,
     ]);
   }
   public function getHistAirData(Request $request)
@@ -27,16 +34,13 @@ class AirController extends Controller
     $start = strtotime($request->dateFrom);
     $end = strtotime($request->dateTo);
 
-    $airAPI = new Air;
-    $airData = $airAPI->location($city)->start($start)->end($end)->getAll();
-    $chart = new ChartController;
-    $chartAir = $chart->getAirChart($airData->list);
-
+    $airData = $this->airAPI->location($city)->start($start)->end($end)->getAll();
+    $airChart = $this->chart->getAirChart($airData->list);
 
     return view('air-in-city' , [
       'airDatas' => $airData->list,
       'cityTitle' => $airData->cityTitle,
-      'chart' => $chartAir,
+      'chart' => $airChart,
     ]);
   }
 
@@ -47,9 +51,8 @@ class AirController extends Controller
     $start = strtotime($request->dateFrom);
     $end = strtotime($request->dateTo);
 
-    $airAPI = new Air;
-    $airData = $airAPI->location($city1)->start($start)->end($end)->getAll();
-    $airData1 = $airAPI->location($city2)->start($start)->end($end)->getAll();
+    $airData = $this->airAPI->location($city1)->start($start)->end($end)->getAll();
+    $airData1 = $this->airAPI->location($city2)->start($start)->end($end)->getAll();
 
     for ($i=0; $i < count($airData1->list); $i++) {
       $airData->list[$i]->components1 = $airData1->list[$i]->components;
@@ -57,14 +60,13 @@ class AirController extends Controller
     }
     $airDatas = $airData->list;
 
-    $chart = new ChartController;
-    $chartAir = $chart->getAirChartFor2Cities($airDatas);
+    $airChart = $this->chart->getAirChartFor2Cities($airDatas);
 
     return view('air-in-cities' , [
       'airDatas' => $airDatas,
       'cityTitle1' => $airData->cityTitle,
       'cityTitle2' => $airData1->cityTitle,
-      'chart' => $chartAir,
+      'chart' => $airChart,
     ]);
   }
 }

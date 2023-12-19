@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 
 class ChartController extends Controller
 {
-
   public function getChartForDailyWeather($deilyWeather)
   {
     //generated data arrays for the chart
@@ -20,10 +19,10 @@ class ChartController extends Controller
     //for coordinate line X
     $data['x'] = $daysErr;
     //for coordinates line Y
-    $data['Ys'][0]['label'] =  'Day temperature';
-    $data['Ys'][1]['data'] =  $dayTempErr;
+    $data['Ys'][0]['label'] = 'Day temperature';
+    $data['Ys'][0]['data'] =  $dayTempErr;
 
-    $data['Ys'][1]['label'] =  'Night temperature';
+    $data['Ys'][1]['label'] = 'Night temperature';
     $data['Ys'][1]['data'] =  $nightTempErr;
 
     return $data;
@@ -33,20 +32,20 @@ class ChartController extends Controller
   {
     //generated data arrays for the chart
     foreach ($haurlyWeather as $hourWeather) {
-      $times = date('H:i d.M', $hourWeather->dt);
+      $time = date('H:i d.M', $hourWeather->dt);
 
-      $timesErr[] = $times;
+      $timeErr[] = $time;
       $tempsErr[] = $hourWeather->temp;
       $feelsTempsErr[] = $hourWeather->feels_like;
     }
     //for coordinate line X
-    $data['x'] = $timesErr;
+    $data['x'] = $timeErr;
     //for coordinate line Y
-    $data['Ys'][0]['label'] =  'Temperature';
+    $data['Ys'][0]['label'] = 'Temperature';
     $data['Ys'][0]['type'] =  'line';
     $data['Ys'][0]['data'] =  $tempsErr;
 
-    $data['Ys'][1]['label'] =  'Feels temperature';
+    $data['Ys'][1]['label'] = 'Feels temperature';
     $data['Ys'][1]['type'] =  'line';
     $data['Ys'][1]['data'] =  $feelsTempsErr;
 
@@ -56,16 +55,16 @@ class ChartController extends Controller
   {
     //generated data arrays for the chart
     foreach ($airDatas as $hourData) {
-      $times = date('H:i d.M', $hourData->dt);
+      $time = date('H:i d.M', $hourData->dt);
 
-      $timesErr[] = $times;
+      $timeErr[] = $time;
       $aqiErr[] = $hourData->main->aqi;
       $aqi1Err[] = $hourData->main1->aqi;
       $aqiCollorErr [] = $this->getCollAqi($hourData->main->aqi);
-      $aqiCollor1Err [] = $this->getCollAqi($hourData->main->aqi);
+      $aqiCollor1Err [] = $this->getCollAqi($hourData->main1->aqi);
     }
     //for coordinate line X
-    $data['x'] = $timesErr;
+    $data['x'] = $timeErr;
     //for coordinate line Y
     $data['Ys'][0]['label'] = 'Air Quality Index in city #1';
     $data['Ys'][0]['type'] = 'line';
@@ -76,7 +75,6 @@ class ChartController extends Controller
     $data['Ys'][1]['type'] = 'line';
     $data['Ys'][1]['data'] = $aqi1Err;
     //$data['Ys'][1]['backgroundColor'] = $aqiCollor1Err;
-
     return $data;
   }
 
@@ -84,19 +82,18 @@ class ChartController extends Controller
   {
     //generated data arrays for the chart
     foreach ($airData as $hourData) {
-      $times = date('H:i d.M', $hourData->dt);
+      $time = date('H:i d.M', $hourData->dt);
 
-      $timesErr[] = $times;
+      $timeErr[] = $time;
       $aqiErr[] = $hourData->main->aqi;
       $aqiCollorErr [] = $this->getCollAqi($hourData->main->aqi);
     }
     //for coordinate line X
-    $data['x'] = $timesErr;
+    $data['x'] = $timeErr;
     //for coordinate line Y
     $data['Ys'][0]['label'] = 'Air Quality Index';
     $data['Ys'][0]['data'] = $aqiErr;
     $data['Ys'][0]['backgroundColor'] = $aqiCollorErr;
-
     return $data;
   }
 

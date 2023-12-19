@@ -14,9 +14,7 @@ class WeatherByLocationController extends Controller
     $city = $request->city;
     $weatherType = $request->weatherType;
     $units = $request->units;
-
     //walidation
-
 
     $locationApi = new Location;
     $cityData = $locationApi->city($city)->getAll();
