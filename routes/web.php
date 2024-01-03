@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\HourlyWeatherController;
 use App\Http\Controllers\WeatherByLocationController;
+use App\Http\Controllers\ExController;
 use App\Http\Controllers\AirController;
 
 /*

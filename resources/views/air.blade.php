@@ -17,7 +17,6 @@
             </div>
             <div class="form-group col-md-3">
               <label for="weatherType">Select date from</label>
-              <!-- <input type="date" class="form-control" name="dateFrom" value="{{date('Y-m-d' , mktime(0, 0, 0, 11, 27, 2020))}}" /> -->
               <input type="date" class="form-control" name="dateFrom" value="{{date('Y-m-d')}}" />
             </div>
             <div class="form-group col-md-3">
@@ -25,8 +24,10 @@
               <input type="date" class="form-control" name="dateTo" value="{{date('Y-m-d')}}" />
             </div>
           </div>
+          <p> *if the selected period is more than 48 hours, the data will be averaged to the day</p>
           <button type="submit" class="btn btn-primary">Enter</button>
         </form>
+
       </div>
 
       <div>
@@ -50,6 +51,7 @@
             <div class="form-group col-md-3">
               <label for="weatherType">Select date to</label>
               <input type="date" class="form-control" name="dateTo" value="{{date('Y-m-d')}}" />
+              <p> *if the selected period is more than 48 hours, the data will be averaged to the day</p>
             </div>
           </div>
           <button type="submit" class="btn btn-primary">Enter</button>

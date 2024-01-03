@@ -70,7 +70,6 @@ class ChartController extends Controller
     $data['Ys'][0]['type'] = 'line';
     $data['Ys'][0]['data'] = $aqiErr;
   //  $data['Ys'][0]['backgroundColor'] = $aqiCollorErr;
-
     $data['Ys'][1]['label'] = 'Air Quality Index  in city #2';
     $data['Ys'][1]['type'] = 'line';
     $data['Ys'][1]['data'] = $aqi1Err;
@@ -117,36 +116,4 @@ class ChartController extends Controller
         break;
       }
   }
-
-//усреднение до дня
-  // public function sliceData($err)
-  // {
-  //   for ($i=0; $i < count($err) ; $i += 24) {
-  //     $er1[] = array_slice($err , $i , 24);
-  //   }
-  //
-  //   return $er1;
-  // }
-  //
-  // public function averageToDay($err)
-  // {
-  //   $aqiSum = 0;
-  //   foreach ($err as  $day) {
-  //     foreach ($day as $hours) {
-  //       $aqiSum += $hours->main->aqi;
-  //       // $coSum += $hours->components->co;
-  //       // $noSum += $hours->components->no;
-  //       // $no2Sum += $hours->components->no2;
-  //       // $o3Sum += $hours->components->o3;
-  //       // $so2Sum += $hours->components->so2;
-  //       // $pm2_5Sum += $hours->components->pm2_5;
-  //       // $pm10Sum += $hours->components->pm10;
-  //       // $nh3Sum += $hours->components->nh3;
-  //     }
-  //     $aqiDay = $aqiSum;
-  //   }
-  //   $err2[] = $aqiDay;
-  //   return $err2;
-  // }
-
 }

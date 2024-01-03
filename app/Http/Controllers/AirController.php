@@ -20,7 +20,7 @@ class AirController extends Controller
 
   public function index()
   {
-    $airData = $this->airAPI->location('Dortmund')->start('1606488670')->end('1606747870')->getAll();
+    $airData = $this->airAPI->location('Dortmund')->start('1703631600')->end('1703718000')->getAll();
     $airChart = $this->chart->getAirChart($airData->list);
 
     return view('air' , [
@@ -28,11 +28,12 @@ class AirController extends Controller
       'chart' => $airChart,
     ]);
   }
+
   public function getHistAirData(Request $request)
   {
     $city = $request->city;
     $start = strtotime($request->dateFrom);
-    $end = strtotime($request->dateTo);
+    $end = strtotime($request->dateTo . ' 23:59:59');
 
     $airData = $this->airAPI->location($city)->start($start)->end($end)->getAll();
     $airChart = $this->chart->getAirChart($airData->list);
@@ -49,7 +50,7 @@ class AirController extends Controller
     $city1 = $request->city1;
     $city2 = $request->city2;
     $start = strtotime($request->dateFrom);
-    $end = strtotime($request->dateTo);
+    $end = strtotime($request->dateTo . ' 23:59:59');
 
     $airData = $this->airAPI->location($city1)->start($start)->end($end)->getAll();
     $airData1 = $this->airAPI->location($city2)->start($start)->end($end)->getAll();
