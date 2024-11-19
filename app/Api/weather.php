@@ -3,7 +3,7 @@ namespace App\Api;
 
   class Weather
 {
-  private $baseURL = 'https://api.openweathermap.org/data/2.5/onecall';
+  private $baseURL = 'https://api.openweathermap.org/data/3.0/onecall';
   private $apiKey;
 
   private $location;
