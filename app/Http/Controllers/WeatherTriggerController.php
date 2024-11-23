@@ -35,7 +35,7 @@ class WeatherTriggerController extends Controller
             'city' => 'required|string', 
             'parameter' => 'required|string', 
             'value' => 'required|numeric', 
-            'condition' => 'required|string',
+            'condition' => 'required|string|in:above,below',
             'period' => 'required|numeric'
         ]);
 
@@ -60,10 +60,30 @@ class WeatherTriggerController extends Controller
      * @param  \App\Models\WeatherTrigger  $weatherTrigger
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, WeatherTrigger $weatherTrigger)
+    public function update(Request $request, $id)
     {
+        $weatherTrigger = WeatherTrigger::find($id);
+        $this->authorize('update', $weatherTrigger);
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'city' => 'sometimes|required|string', 
+            'parameter' => 'sometimes|required|string', 
+            'value' => 'sometimes|required|numeric', 
+            'condition' => 'sometimes|required|string',
+            'period' => 'sometimes|required|numeric',
+            'status' => 'nullable|string|in:active,inactive',
+            'oldStatus' => 'required|string',
+        ]);
         
-        dd($request);
+
+        if ($request->status !== $request->oldStatus) {
+            $validated['status'] = $request->status ?? 'inactive';
+        }
+        
+        $weatherTrigger->fill($validated)->save();
+
+        return redirect()->route('triggers.index')->with('succes' , 'Trigger updated saccessfully');
+
     }
 
     /**
@@ -75,6 +95,10 @@ class WeatherTriggerController extends Controller
     public function destroy($id)
     {
         $weatherTrigger = WeatherTrigger::find($id);
+
+        if (Auth::user()->cannot('delete' , $weatherTrigger)) {
+            return redirect()->route('triggers.index')->with('error', 'You do nit have permission to delete this trigger');
+        }
     
         $weatherTrigger->delete();
 

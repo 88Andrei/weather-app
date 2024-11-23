@@ -30,8 +30,14 @@ Route::get('/air-in-city', [AirController::class , 'index'])->name('air-in-city'
 Route::post('/air-in-city', [AirController::class , 'getHistAirData'])->name('air-in-city');
 Route::post('/air-in-cities', [AirController::class , 'getHistAirDataOfCities'])->name('air-in-cities');
 
-Route::resource('triggers' , WeatherTriggerController::class)->except(['show'])->middleware(['auth']);
+Route::middleware(['auth'])->group(function () {
+    Route::prefix('/dashboard')->group(function(){
+        Route::resource('triggers' , WeatherTriggerController::class)->except(['show']);
 
-Route::get('/triggers/messages', [WeatherTriggerController::class , 'showMessages'])->middleware(['auth'])->name('triggers.messages');
+        Route::get('/messages', [WeatherTriggerController::class , 'showMessages'])->name('triggers.messages');
+    });
+
+});
+
 
 require __DIR__.'/auth.php';

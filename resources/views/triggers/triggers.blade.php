@@ -175,6 +175,7 @@
         @csrf
         @method('PUT')
         <div class="grid gap-4 mb-4 ">
+            <input type="hidden" id="old-status" name="oldStatus">
             {{-- Name --}}
             <div>
                 <x-label for="modal-name" :value="__('Name')" />
@@ -185,7 +186,7 @@
             <div>
                 <label for="status-toggle" class="flex items-center cursor-pointer">
                     <div class="relative">
-                        <input type="checkbox" id="status-toggle" name="status" class="sr-only peer" onchange="toggleStatus()">
+                        <input type="checkbox" id="status-toggle" name="status" class="sr-only peer" value="active" onchange="toggleStatus()">
                         <div class="block bg-gray-600 peer-checked:bg-blue-600 w-14 h-8 rounded-full"></div>
                         <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition peer-checked:translate-x-full peer-checked:bg-blue-600"></div>
                     </div>
@@ -222,6 +223,7 @@
     function openEditModal(triggerId, name, status) {
         // Setting data in modal window fields
         document.getElementById('modal-name').value = name;
+        document.getElementById('old-status').value = status;
         const toggle = document.getElementById('status-toggle'); 
         toggle.checked = (status === 'active'); 
         // Update status text
@@ -229,12 +231,12 @@
         statusLabel.textContent = toggle.checked ? 'Active' : 'Inactive';
 
         // Update the form action URL to send a request to update a specific trigger
-        document.getElementById('editTriggerForm').action = `/triggers/${triggerId}`;
+        document.getElementById('editTriggerForm').action = `/dashboard/triggers/${triggerId}`;
     }
 
     function openDeleteModal(triggerId) {
         // Update the form action URL to send a request to delete a specific trigger
-        document.getElementById('deleteTriggerForm').action = `/triggers/${triggerId}`;
+        document.getElementById('deleteTriggerForm').action = `/dashboard/triggers/${triggerId}`;
     }
     
     function toggleStatus() {
