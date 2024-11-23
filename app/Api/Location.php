@@ -6,6 +6,7 @@ namespace App\Api;
   private $baseURL = "https://geocode.search.hereapi.com/v1/geocode";
   private $apiKey;
   private $city;
+  private $requestURL;
 
   function __construct($city = null)
     {
@@ -34,14 +35,9 @@ namespace App\Api;
     public function getLocation()
     {
       $CityData = $this->getAll();
-      //proverca na Odessy
-      //$cityTitle = $CityData[0]->title;
       $location = $CityData[0]->position;
 
-      $position = [];
-      $position[] = $location->lat;
-      $position[] = $location->lng;
-      return $position;
+      return $location;
     }
 
     private function bildURL()

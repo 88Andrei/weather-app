@@ -1,11 +1,5 @@
 <x-dashboard>
     
-  
-<x-slot name="header">
-    {{ __('All triggers') }}
-</x-slot>
-
-<!-- Start block -->
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg p-5 bg-white dark:bg-gray-900 antialiased px-4 py-4">
         <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
             <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
@@ -132,8 +126,8 @@
                 <x-label for="parameter" :value="__('Weather parameter')" />
                 <select id="parameter" name="parameter" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
                     <option value="temp">Air temperature</option>
-                    <option value="wind">Wind speed</option>
-                    <option value="prec">Precipitation</option>
+                    <option value="wind_speed">Wind speed</option>
+                    <option value="humidity">Humidity</option>
                 </select>
                 <x-input-error :messages="$errors->get('parameter')"/>
             </div>

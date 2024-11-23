@@ -53,13 +53,7 @@
         >
           <span class="sr-only">View notifications</span>
           <!-- Bell icon -->
-          <svg
-            aria-hidden="true"
-            class="w-6 h-6"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+          <svg aria-hidden="true" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" >
             <path
               d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"
             ></path>
@@ -71,47 +65,41 @@
           <div class="block py-2 px-4 text-base font-medium text-center text-gray-700 bg-gray-50 dark:bg-gray-600 dark:text-gray-300">
             Notifications
           </div>
-          <div>
-            <a href="#" class="flex py-3 px-4 border-b hover:bg-gray-100 dark:hover:bg-gray-600 dark:border-gray-600">
-              <div class="flex-shrink-0">
-                <img class="w-11 h-11 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Leos avatar"/>
-                <div class="flex absolute justify-center items-center ml-6 -mt-5 w-5 h-5 bg-gray-900 rounded-full border border-white dark:border-gray-700">
-                  <svg aria-hidden="true" class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"></path>
-                  </svg>
+          @if (Auth::user()->notifications)
+            @foreach (Auth::user()->notifications as $notification)
+            <div>
+              <a href="#" class="flex py-3 px-4 border-b hover:bg-gray-100 dark:hover:bg-gray-600 dark:border-gray-600">
+                <div class="flex-shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-10">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                  </svg>                
                 </div>
-              </div>
-              <div class="pl-3 w-full">
-                <div class="text-gray-500 font-normal text-sm mb-1.5 dark:text-gray-400">
-                  <span class="font-semibold text-gray-900 dark:text-white">
-                      Jese leos
-                  </span>
-                  and
-                  <span class="font-medium text-gray-900 dark:text-white"
-                    >5 others</span
-                  >
-                  started following you.
+                <div class="pl-3 w-full">
+                  <div class="text-gray-500 font-normal text-sm mb-1.5 dark:text-gray-400">
+                    <span class="font-semibold text-gray-900 dark:text-white">
+                      Trigger Event
+                    </span>
+                    at
+                    <span class="font-medium text-gray-900 dark:text-white">
+                      12:00
+                    </span>
+                  </div>
+                  <div>
+                    {{$notification->data['messages']['title']}}
+                  </div>
                 </div>
-                <div
-                  class="text-xs font-medium text-primary-600 dark:text-primary-500"
-                >
-                  10 minutes ago
-                </div>
-              </div>
-            </a>              
+              </a>              
+            </div>
+            @endforeach
+          @else
+          <div class="relative flex flex-col justify-between py-0 px-4 cursor-pointer">
+            No notifications yet
           </div>
-          <a
-            href="#"
-            class="block py-2 text-md font-medium text-center text-gray-900 bg-gray-50 hover:bg-gray-100 dark:bg-gray-600 dark:text-white dark:hover:underline"
-          >
+          @endif
+          {{-- View all --}}
+          <a href="{{route('triggers.messages')}}"class="block py-2 text-md font-medium text-center text-gray-900 bg-gray-50 hover:bg-gray-100 dark:bg-gray-600 dark:text-white dark:hover:underline">
             <div class="inline-flex items-center">
-              <svg
-                aria-hidden="true"
-                class="mr-2 w-4 h-4 text-gray-500 dark:text-gray-400"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
+              <svg aria-hidden="true" class="mr-2 w-4 h-4 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                 <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"></path>
                 <path
                   fill-rule="evenodd"
@@ -123,7 +111,6 @@
             </div>
           </a>
         </div>
-        <!-- Apps -->
 
         <button
           type="button"
@@ -176,3 +163,4 @@
       </div>
     </div>
   </nav>
+

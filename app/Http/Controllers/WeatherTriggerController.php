@@ -11,8 +11,16 @@ class WeatherTriggerController extends Controller
     public function index()
     {
         $triggers = WeatherTrigger::where('user_id', Auth::id())->paginate(10);
-
+        
         return view('triggers/triggers' , compact('triggers'));
+    }
+
+    public function showMessages()
+    {
+        
+        $notifications = Auth::user()->notifications;
+        
+        return view('triggers/messages', compact('notifications'));  
     }
 
     public function create()
@@ -44,16 +52,6 @@ class WeatherTriggerController extends Controller
         return redirect()->route('triggers.index')->with('success', 'Trigger created successfully!');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\WeatherTrigger  $weatherTrigger
-     * @return \Illuminate\Http\Response
-     */
-    public function show(WeatherTrigger $weatherTrigger)
-    {
-        return view('triggers/show' , compact('weatherTrigger'));
-    }
 
     /**
      * Update the specified resource in storage.

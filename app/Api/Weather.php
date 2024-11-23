@@ -10,7 +10,7 @@ namespace App\Api;
   private $units;
   private $defaultUnits = 'metric';
   private $format;
-  private $defaultFormat = 'json';
+  private $requestURL;
 
 
    function __construct($locationData = null, $unitsName = null, $formatName = null)
@@ -23,12 +23,9 @@ namespace App\Api;
     $this->requestURL = $this->baseURL . '?appid=' . $this->apiKey;
   }
 
-  public function location($lat , $lon)
+  public function location($locationObj)
   {
-    $locationData = [];
-    $locationData[] = $lat;
-    $locationData[] = $lon;
-    return new self($locationData, $this->units, $this->format);
+    return new self($locationObj, $this->units, $this->format);
   }
 
   public function units($unitsName)
@@ -41,25 +38,21 @@ namespace App\Api;
     return $this->getAll()->hourly;
   }
 
+  public function getCurrent()
+  {
+    return $this->getAll()->current;
+  }
+
   public function getDaily()
   {
     return $this->getAll()->daily;
-  }
-
-  public function parseResult($result)
-  {
-    if (($this->format == 'xml') || ($this->defaultFormat == 'xml') && (!$this->format)) {
-      return $this->parsXML($result);
-    }
-
-    return json_decode($result);
   }
 
   public function getAll()
   {
     $requestURL = $this->bildURL();
     $result = $this->sendRequest($requestURL);
-    return $this->parseResult($result);
+    return json_decode($result);
   }
 
   private function bildURL()
@@ -67,7 +60,7 @@ namespace App\Api;
     $requestURL = $this->requestURL;
 
     if($this->location != null){
-      $requestURL .= '&lat='. $this->location[0] .'&lon=' . $this->location[1];
+      $requestURL .= '&lat='. $this->location->lat .'&lon=' . $this->location->lng;
     } else {
       throw new \Exception("No location was passed", 1);
     }
@@ -76,10 +69,6 @@ namespace App\Api;
       $requestURL .= '&units=' . $this->units;
     } else {
       $requestURL .= '&units=' . $this->defaultUnits;
-    }
-
-    if ($this->format == 'xml' || $this->defaultFormat == 'xml' && (!$this->format)) {
-      $requestURL .= '&mode=xml';
     }
 
     return $requestURL;
