@@ -23,6 +23,7 @@ class CreateWeatherTriggersTable extends Migration
             $table->float('period');
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
+            $table->engine = 'InnoDB';
         });
     }
 

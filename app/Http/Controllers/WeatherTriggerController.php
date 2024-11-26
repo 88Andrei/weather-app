@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Location;
 use App\Models\WeatherTrigger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,9 +11,10 @@ class WeatherTriggerController extends Controller
 {
     public function index()
     {
-        $triggers = WeatherTrigger::where('user_id', Auth::id())->paginate(10);
+        $triggers = WeatherTrigger::where('user_id', Auth::id())->get();
+        $locations = Location::where('user_id', Auth::id())->get();
         
-        return view('triggers/triggers' , compact('triggers'));
+        return view('triggers/triggers' , compact('triggers', 'locations'));
     }
 
     public function showMessages()
@@ -32,17 +34,17 @@ class WeatherTriggerController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string',
-            'city' => 'required|string', 
+            'location_id' => 'required|numeric|exists:locations,id', 
             'parameter' => 'required|string', 
             'value' => 'required|numeric', 
             'condition' => 'required|string|in:above,below',
-            'period' => 'required|numeric'
+            'period' => 'required|numeric',
         ]);
 
         WeatherTrigger::create([
             'user_id' => Auth::id(),
             'name' => $validated['name'],
-            'city' => $validated['city'], 
+            'location_id' => $validated['location_id'], 
             'parameter' => $validated['parameter'],
             'value' => $validated['value'],
             'condition' => $validated['condition'],
@@ -52,14 +54,6 @@ class WeatherTriggerController extends Controller
         return redirect()->route('triggers.index')->with('success', 'Trigger created successfully!');
     }
 
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\WeatherTrigger  $weatherTrigger
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         $weatherTrigger = WeatherTrigger::find($id);
@@ -86,12 +80,6 @@ class WeatherTriggerController extends Controller
 
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\WeatherTrigger  $weatherTrigger
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         $weatherTrigger = WeatherTrigger::find($id);
@@ -105,6 +93,5 @@ class WeatherTriggerController extends Controller
         return redirect()->route('triggers.index')->with('success', 'Trigger deleted successfully');
 
     }
-    
-    
+       
 }
