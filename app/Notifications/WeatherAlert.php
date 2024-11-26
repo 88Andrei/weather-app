@@ -13,16 +13,19 @@ class WeatherAlert extends Notification implements ShouldQueue
 
     protected $trigger; 
     protected $currentValue;
+    protected $date;
+
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($trigger, $currentValue)
+    public function __construct($trigger, $currentValue, $date)
     {
         $this->trigger = $trigger; 
         $this->currentValue = $currentValue;
+        $this->date = date("Y-m-d H:i", $date);
     }
 
     /**
@@ -62,7 +65,8 @@ class WeatherAlert extends Notification implements ShouldQueue
         $messages = $this->trigger->constructMessage($this->currentValue);
         return [ 
             'trigger_id' => $this->trigger->id, 
-            'current_value' => $this->currentValue, 
+            'current_value' => $this->currentValue,
+            'date' => $this->date, 
             'messages' => $messages,
         ]; 
     }

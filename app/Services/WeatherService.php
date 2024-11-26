@@ -1,40 +1,66 @@
 <?php
 namespace App\Services;
 
-use App\Api\Location;
 use App\Models\WeatherTrigger;
 use App\Api\Weather;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\WeatherAlert;
-use Illuminate\Support\Facades\Log;
 
 class WeatherService
 {
     protected $weatherApi;
-    protected $locationApi;
 
-    public function __construct(Weather $weatherApi, Location $locationApi)
+    public function __construct(Weather $weatherApi)
     {
         $this->weatherApi = $weatherApi;
-        $this->locationApi = $locationApi;
     }
 
     public function checkTriggers()
     {
-        $triggers = WeatherTrigger::all();
+        $triggers = WeatherTrigger::where('status', 'active')->get();
 
         foreach ($triggers as $trigger) {
-            $location = $this->locationApi->city($trigger->city)->getLocation();
+            $location = $trigger->getLocation();
+            $dailyWeather = $this->weatherApi->location($location)->getDaily();
 
-            $currentWeather = $this->weatherApi->location($location)->getCurrent();
+            $period = $trigger->period;
             $parameter  = $trigger->parameter;
-            $currentValue = $currentWeather->$parameter;
 
-            if (($trigger->condition == 'above' && $currentValue > $trigger->value) ||
-                ($trigger->condition == 'below' && $currentValue < $trigger->value)) {
+            if ($parameter == 'temp') {
+                $this->checkParamTemp($dailyWeather, $trigger, $period);
+            }else {
+                for ($i=0; $i <= $period; $i++) { 
+                    $dailyValue = $dailyWeather[$i]->$parameter;
+                    $day = $dailyWeather[$i]->dt;
+                    
+                    if (($trigger->condition == 'above' && $dailyValue > $trigger->value) ||
+                    ($trigger->condition == 'below' && $dailyValue < $trigger->value)) {
+                    // Sending a notification to a user
+                    $user = $trigger->user;
+                    Notification::send($user, new WeatherAlert($trigger, $dailyValue, $day));
+                    }
+                }
+            }
+        }
+    }
+
+    public function checkParamTemp($dailyWeather, $trigger, $period)
+    {
+        for ($i=0; $i <= $period; $i++) { 
+            $dailyTempMax = $dailyWeather[$i]->temp->max;
+            $dailyTempMin = $dailyWeather[$i]->temp->max;
+            $day = $dailyWeather[$i]->dt;
+            
+            if ($trigger->condition == 'above' && $dailyTempMax > $trigger->value){
                 // Sending a notification to a user
                 $user = $trigger->user;
-                Notification::send($user, new WeatherAlert($trigger, $currentValue));
+                Notification::send($user, new WeatherAlert($trigger, $dailyTempMax, $day));
+            }
+
+            if ($trigger->condition == 'below' && $dailyTempMin < $trigger->value){
+            // Sending a notification to a user
+            $user = $trigger->user;
+            Notification::send($user, new WeatherAlert($trigger, $dailyTempMin, $day));
             }
         }
     }
