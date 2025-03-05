@@ -15,12 +15,6 @@ class WeatherAlert extends Notification implements ShouldQueue
     protected $currentValue;
     protected $date;
 
-
-    /**
-     * Create a new notification instance.
-     *
-     * @return void
-     */
     public function __construct($trigger, $currentValue, $date)
     {
         $this->trigger = $trigger; 
