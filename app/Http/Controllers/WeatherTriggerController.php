@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\WeatherTriggerCreated;
 use App\Models\Location;
 use App\Models\WeatherTrigger;
 use Illuminate\Http\Request;
@@ -14,20 +15,19 @@ class WeatherTriggerController extends Controller
         $triggers = WeatherTrigger::where('user_id', Auth::id())->get();
         $locations = Location::where('user_id', Auth::id())->get();
         
-        return view('triggers/triggers' , compact('triggers', 'locations'));
+        return view('dashboard/triggers/triggers' , compact('triggers', 'locations'));
     }
 
     public function showMessages()
     {
+        $notifications = Auth::user()->unreadNotifications;
         
-        $notifications = Auth::user()->notifications;
-        
-        return view('triggers/messages', compact('notifications'));  
+        return view('dashboard/triggers/messages', compact('notifications'));  
     }
 
     public function create()
     {
-        return view('triggers/create');
+        return view('dashboard/triggers/create');
     }
 
     public function store(Request $request)
@@ -41,7 +41,7 @@ class WeatherTriggerController extends Controller
             'period' => 'required|numeric',
         ]);
 
-        WeatherTrigger::create([
+        $weatherTrigger = WeatherTrigger::create([
             'user_id' => Auth::id(),
             'name' => $validated['name'],
             'location_id' => $validated['location_id'], 
@@ -50,6 +50,8 @@ class WeatherTriggerController extends Controller
             'condition' => $validated['condition'],
             'period' => $validated['period'], 
         ]);
+
+        WeatherTriggerCreated::dispatch($weatherTrigger);
 
         return redirect()->route('triggers.index')->with('success', 'Trigger created successfully!');
     }
@@ -77,7 +79,6 @@ class WeatherTriggerController extends Controller
         $weatherTrigger->fill($validated)->save();
 
         return redirect()->route('triggers.index')->with('succes' , 'Trigger updated saccessfully');
-
     }
 
     public function destroy($id)

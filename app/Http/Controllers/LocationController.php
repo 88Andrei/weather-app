@@ -17,12 +17,12 @@ class LocationController extends Controller
     {
         $locations = Location::where('user_id', Auth::id())->get();
 
-        return view('locations.locations', compact('locations'));
+        return view('dashboard/locations/locations', compact('locations'));
     }
 
     public function create()
     {
-        return view('locations/create');
+        return view('dashboard/locations/create');
     }
 
     /**
