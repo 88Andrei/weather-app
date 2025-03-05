@@ -10,11 +10,13 @@ class MainController extends Controller
   protected $defaultLocation;
   protected $chart;
   protected $weatherAPI;
+  protected $units;
 
   public function __construct(ChartController $chart, Weather $weatherAPI)
   {
     $this->chart = $chart;
     $this->weatherAPI = $weatherAPI;
+    $this->units  = ['metric' , 'imperial'];
     $this->defaultLocation = (object)[
       //Dortmund
       'lat' => 51.51661,
@@ -25,7 +27,7 @@ class MainController extends Controller
   public function index()
     {
       $weather = $this->weatherAPI->location($this->defaultLocation)->getAll();
-      $units = ['metric' , 'imperial'];
+      $units = $this->units;
 
       $chart = $this->chart->getChartForDailyWeather($weather->daily);
 
@@ -34,7 +36,21 @@ class MainController extends Controller
         'forecast' => $weather->daily,
         'units' => $units,
         'chart' => $chart,
-        'cityTitels' => null,
+      ]);
+    }
+
+    public function weather()
+    {
+      $weather = $this->weatherAPI->location($this->defaultLocation)->getAll();
+      $units = $this->units;
+
+      $chart = $this->chart->getChartForDailyWeather($weather->daily);
+
+      return view('weather' , [
+        'current' => $weather->current,
+        'forecast' => $weather->daily,
+        'units' => $units,
+        'chart' => $chart,
       ]);
     }
 }
