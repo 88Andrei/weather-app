@@ -12,16 +12,22 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                    <x-nav-link :href="route('home')" :active="request()->routeIs('rates')">
+                    <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
                         {{ __('Home') }}
                     </x-nav-link>
 
-                    <x-nav-link :href="route('air')" :active="request()->routeIs('rates')">
-                        {{ __('Air pollution') }}
+                    <x-nav-link :href="route('weather')" :active="request()->routeIs('weather')">
+                        {{ __('Weather') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('air')" :active="request()->routeIs('air')">
+                        {{ __('Air Quality') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                        {{ __('Dashboard') }}
                     </x-nav-link>
                 </div>
-
-
             </div>
 
             <!-- Settings Dropdown -->
@@ -44,7 +50,6 @@
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
@@ -60,17 +65,12 @@
                       <div>
                         <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Log in</a>
                       </div>
-
                       <div>
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="ml-4 text-sm text-gray-700 dark:text-gray-500 underline">Register</a>
-                        @endif
+                        <a href="{{ route('register') }}" class="ml-4 text-sm text-gray-700 dark:text-gray-500 underline">Register</a>
                       </div>
                   </div>
               </div>
             @endauth
-
-
 
             <!-- Hamburger -->
             <div class="-mr-2 flex items-center sm:hidden">
@@ -89,6 +89,18 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')">
                 {{ __('Home') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('weather')" :active="request()->routeIs('weather')">
+                {{ __('Weather') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('air')" :active="request()->routeIs('air')">
+                {{ __('Air Quality') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                {{ __('Dashboard') }}
             </x-responsive-nav-link>
         </div>
 
@@ -115,12 +127,7 @@
         </div>
         @else
             <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Log in</a>
-
-            @if (Route::has('register'))
-                <a href="{{ route('register') }}" class="ml-4 text-sm text-gray-700 dark:text-gray-500 underline">Register</a>
-            @endif
+            <a href="{{ route('register') }}" class="ml-4 text-sm text-gray-700 dark:text-gray-500 underline">Register</a>
         @endauth
-
-
     </div>
 </nav>
