@@ -27,11 +27,15 @@ class WeatherTriggerController extends Controller
 
     public function create()
     {
+        $this->authorize('create', WeatherTrigger::class);
+
         return view('dashboard/triggers/create');
     }
 
     public function store(Request $request)
     {
+        $this->authorize('create', WeatherTrigger::class);
+        
         $validated = $request->validate([
             'name' => 'required|string',
             'location_id' => 'required|numeric|exists:locations,id', 

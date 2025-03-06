@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\Location;
 use App\Models\User;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class LocationPolicy
@@ -41,7 +42,14 @@ class LocationPolicy
      */
     public function create(User $user)
     {
-        //
+        $limitExceeded = $user->locations()->count() >= config('limits.free_location_limit') 
+                            && !$user->is_premium;
+
+        if ($limitExceeded) {
+            throw new AuthorizationException('location_limit_exceeded');
+        }
+
+        return true;
     }
 
     /**

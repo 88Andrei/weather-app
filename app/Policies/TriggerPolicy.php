@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 use App\Models\WeatherTrigger;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class TriggerPolicy
@@ -41,7 +42,14 @@ class TriggerPolicy
      */
     public function create(User $user)
     {
-        //
+        $limitExceeded = $user->triggers()->count() >= config('limits.free_weather_trigger_limit') 
+                            && !$user->is_premium;
+
+        if ($limitExceeded) {
+            throw new AuthorizationException('trigger_limit_exceeded');
+        }
+        
+        return true;
     }
 
     /**

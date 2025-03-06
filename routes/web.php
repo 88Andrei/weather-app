@@ -23,6 +23,9 @@ Route::post('/air-in-cities', [AirController::class , 'getHistAirDataOfCities'])
 Route::middleware(['auth'])->group(function () {
     Route::prefix('/dashboard')->group(function(){
         Route::get('/home', [DashboardController::class, 'home'])->name('dashboard');
+        Route::get('/tariff', function(){
+            return view('dashboard.tariff');
+        })->name('tariff');
 
         Route::resource('triggers' , WeatherTriggerController::class)->except(['show']);
         Route::resource('locations' , LocationController::class)->except(['show', 'update', 'edit']);

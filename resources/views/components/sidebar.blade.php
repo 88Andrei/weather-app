@@ -50,6 +50,14 @@
               </span>
             </a>
           </li>
+          <li>
+            <a href="{{ route('tariff') }}" class="flex items-center p-2 text-base font-medium text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11.999 3l2.562 5.637 6.173.825-4.469 4.35 1.101 6.188-5.367-2.894-5.367 2.894 1.101-6.188-4.469-4.35 6.173-.825L11.999 3z" />
+              </svg>              
+              <span class="ml-3">Tariff</span>
+            </a>
+          </li>
         </ul>
         <ul class="pt-5 mt-5 space-y-2 border-t border-gray-200 dark:border-gray-700">
           <li>

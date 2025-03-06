@@ -38,6 +38,11 @@ class User extends Authenticatable
         return $this->hasMany(Location::class);
     }
 
+    public function triggers()
+    {
+        return $this->hasMany(WeatherTrigger::class);
+    }
+
     /**
      * The attributes that should be cast.
      *

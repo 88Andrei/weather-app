@@ -22,6 +22,8 @@ class LocationController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Location::class);
+        
         return view('dashboard/locations/create');
     }
 
@@ -33,6 +35,8 @@ class LocationController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Location::class);
+        
         $validated = $request->validate([
             'name' => 'required|string|unique:locations,name|max:255',
             'lat' => 'required|numeric',
