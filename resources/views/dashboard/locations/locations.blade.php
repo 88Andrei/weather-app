@@ -19,7 +19,7 @@
         <div class="overflow-x-auto">
             @if ($locations->isEmpty())
             <div class="sm:col-span-2">
-                <h3 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">
+                <h3 class="px-4 mb-4 text-xl font-bold text-gray-900 dark:text-white">
                     Here you will find the list of all your created locations. To create a location, please follow to the New location section.
                 </h3>
             </div>

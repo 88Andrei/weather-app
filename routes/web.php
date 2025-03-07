@@ -20,7 +20,7 @@ Route::get('/air-in-city', [AirController::class , 'index'])->name('air-in-city'
 Route::post('/air-in-city', [AirController::class , 'getHistAirData'])->name('air-in-city');
 Route::post('/air-in-cities', [AirController::class , 'getHistAirDataOfCities'])->name('air-in-cities');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'has.location'])->group(function () {
     Route::prefix('/dashboard')->group(function(){
         Route::get('/home', [DashboardController::class, 'home'])->name('dashboard');
         Route::get('/tariff', function(){

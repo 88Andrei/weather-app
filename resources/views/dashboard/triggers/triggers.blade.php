@@ -18,7 +18,7 @@
         <div class="overflow-x-auto">
             @if ($triggers->isEmpty())
             <div class="sm:col-span-2">
-                <h3 class="mb-4 text-xl font-bold text-gray-900 dark:text-white">
+                <h3 class="px-4 mb-4 text-xl font-bold text-gray-900 dark:text-white">
                     Here you will find the list of all your created triggers. To create a trigger, please follow to the New trigger section.
                 </h3>
             </div>
