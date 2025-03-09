@@ -13,7 +13,7 @@ class EnsureUserHasLocation
     {
         $user = Auth::user();
         //If the user has no locations and is not on the creation page
-        if ($user->locations->isEmpty() && !$request->routeIs('locations.create')) {
+        if ($user->locations->isEmpty() && !$request->routeIs('locations.create') && !$request->routeIs('locations.store')) {
             return redirect()->route('locations.create')
                 ->with('error', 'To start tracking weather insights in the Dashboard, please add your first location.');
         }
