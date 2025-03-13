@@ -5,6 +5,7 @@ use App\Models\WeatherTrigger;
 use App\Api\Weather;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\WeatherAlert;
+use Illuminate\Support\Facades\Cache;
 
 class WeatherService
 {
@@ -18,55 +19,43 @@ class WeatherService
     public function checkTrigger($trigger)
     {
         $location = $trigger->getLocation();
-        $dailyWeather = $this->weatherApi->location($location)->getDaily();
 
-        $period = $trigger->period;
-        $parameter  = $trigger->parameter;
+        // Cache the daily weather data for 1 hour
+        $dailyWeather = Cache::remember(
+            'Weather_location_' . $trigger->location_id,  
+            now()->addHours(1),
+            fn() => $this->weatherApi->location($location)->getDaily()
+        );
 
-        if ($parameter == 'temp') {
-            $this->checkTempTrigger($dailyWeather, $trigger, $period);
-        }else {
-            for ($i=0; $i <= $period; $i++) { 
-                $dailyValue = $dailyWeather[$i]->$parameter;
-                $day = $dailyWeather[$i]->dt;
-                
-                if (($trigger->condition == 'above' && $dailyValue > $trigger->value) ||
-                    ($trigger->condition == 'below' && $dailyValue < $trigger->value)) {
-                        
-                    // Sending a notification to a user
-                    $user = $trigger->user;
-                    Notification::send($user, new WeatherAlert($trigger, $dailyValue, $day));
-                }
-            }
-        }
+        // Get the relevant weather data for the trigger period
+        $relevantWeatherData = array_slice($dailyWeather, 0, $trigger->period + 1);
+
+        $this->checkTriggerConditions($relevantWeatherData, $trigger);        
     }
 
     public function checkAllTriggers()
     {
-        $triggers = WeatherTrigger::where('status', 'active')->get();
+        $triggers = WeatherTrigger::where('status', 'active')->with('location')->get();
 
         foreach ($triggers as $trigger) {
             $this->checkTrigger($trigger);
         }
     }
 
-    private function checkTempTrigger($dailyWeather, $trigger, $period)
+    private function checkTriggerConditions($weatherData, $trigger)
     {
-        for ($i=0; $i <= $period; $i++) { 
-            $dailyTempMax = $dailyWeather[$i]->temp->max;
-            $dailyTempMin = $dailyWeather[$i]->temp->min;
-            $day = $dailyWeather[$i]->dt;
-            
-            if ($trigger->condition == 'above' && $dailyTempMax > $trigger->value){
-                // Sending a notification to a user
-                $user = $trigger->user;
-                Notification::send($user, new WeatherAlert($trigger, $dailyTempMax, $day));
-            }
+        $user = $trigger->user;
 
-            if ($trigger->condition == 'below' && $dailyTempMin < $trigger->value){
-                // Sending a notification to a user
-                $user = $trigger->user;
-                Notification::send($user, new WeatherAlert($trigger, $dailyTempMin, $day));
+        foreach ($weatherData as $dayWeather) {
+            $value = $trigger->parameter === 'temp'
+            //if the parameter is temperature, get the max or min temperature based on the condition
+            ? ($trigger->condition === 'above' ? $dayWeather->temp->max : $dayWeather->temp->min)
+            //otherwise, get the value of the parameter
+            : $dayWeather->{$trigger->parameter};
+
+            if (($trigger->condition === 'above' && $value > $trigger->value) ||
+                ($trigger->condition === 'below' && $value < $trigger->value)) {
+                Notification::send($user, new WeatherAlert($trigger, $value, $dayWeather->dt));
             }
         }
     }

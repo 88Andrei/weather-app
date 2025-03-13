@@ -4,7 +4,7 @@
     <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
         <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
             <div class="px-5 w-full">
-                <h1>Dashboard: weather at {{ $userLocations->first()->name}}</h1> 
+                <h1>Dashboard: weather at {{ $location->name}}</h1> 
             </div>
         </div>
 
