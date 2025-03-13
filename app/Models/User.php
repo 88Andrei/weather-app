@@ -43,6 +43,13 @@ class User extends Authenticatable
         return $this->hasMany(WeatherTrigger::class);
     }
 
+    public function getTriggerNotifications()
+    {
+        return $this->unreadNotifications
+            ->where('type', 'App\Notifications\WeatherAlert')
+            ->sortBy(fn($notification) => $notification->data['date']);
+    }
+    
     /**
      * The attributes that should be cast.
      *

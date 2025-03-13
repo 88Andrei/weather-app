@@ -12,16 +12,16 @@ class WeatherTriggerController extends Controller
 {
     public function index()
     {
-        $triggers = WeatherTrigger::where('user_id', Auth::id())->get();
-        $locations = Location::where('user_id', Auth::id())->get();
+        $triggers = WeatherTrigger::where('user_id', Auth::id())->with('location')->get();
+        $locations = $triggers->pluck('location')->unique('id');
         
         return view('dashboard/triggers/triggers' , compact('triggers', 'locations'));
     }
 
     public function showMessages()
     {
-        $notifications = Auth::user()->unreadNotifications;
-        
+        $notifications = Auth::user()->getTriggerNotifications();
+
         return view('dashboard/triggers/messages', compact('notifications'));  
     }
 

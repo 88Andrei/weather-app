@@ -65,8 +65,8 @@
           <div class="block py-2 px-4 text-base font-medium text-center text-gray-700 bg-gray-50 dark:bg-gray-600 dark:text-gray-300">
             <h2>Notifications</h2>
           </div>
-          @if (Auth::user()->notifications->isNotEmpty())
-            @foreach (Auth::user()->notifications as $notification)
+          @if (Auth::user()->getTriggerNotifications()->isNotEmpty())
+            @foreach (Auth::user()->getTriggerNotifications() as $notification)
             <div>
               <a href="#" class="flex py-3 px-4 border-b hover:bg-gray-100 dark:hover:bg-gray-600 dark:border-gray-600">
                 <div class="flex-shrink-0">
