@@ -3,24 +3,22 @@
 namespace App\Listeners;
 
 use App\Events\WeatherTriggerCreated;
-use App\Services\WeatherService;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Services\WeatherTriggerService;
 
-class RunWeatherService
+class RunWeatherTriggerService
 {
-    private $weatherService;
+    private $WeatherTriggerService;
 
-    public function __construct(WeatherService $weatherService)
+    public function __construct(WeatherTriggerService $WeatherTriggerService)
     {
-        $this->weatherService = $weatherService;
+        $this->WeatherTriggerService = $WeatherTriggerService;
     }
 
     public function handle(WeatherTriggerCreated $event)
     {
         $userTrigger = $event->weatherTrigger;
 
-        //Start WeatherService when a new trigger is created
-        $this->weatherService->checkTrigger($userTrigger);
+        //Start WeatherTriggerService when a new trigger is created
+        $this->WeatherTriggerService->checkTrigger($userTrigger);
     }
 }

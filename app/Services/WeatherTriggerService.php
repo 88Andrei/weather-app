@@ -7,13 +7,15 @@ use Illuminate\Support\Facades\Notification;
 use App\Notifications\WeatherAlert;
 use Illuminate\Support\Facades\Cache;
 
-class WeatherService
+class WeatherTriggerService
 {
     protected $weatherApi;
+    protected $cacheTime;
 
     public function __construct(Weather $weatherApi)
     {
         $this->weatherApi = $weatherApi;
+        $this->cacheTime = config('cache.cache_time_for_weather');
     }
 
     public function checkTrigger($trigger)
@@ -23,7 +25,7 @@ class WeatherService
         // Cache the daily weather data for 1 hour
         $dailyWeather = Cache::remember(
             'Weather_location_' . $trigger->location_id,  
-            now()->addHours(1),
+            $this->cacheTime,
             fn() => $this->weatherApi->location($location)->getDaily()
         );
 

@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Services\WeatherService;
+use App\Services\WeatherTriggerService;
 use Illuminate\Console\Command;
 
 class WeatherAlert extends Command
@@ -18,7 +18,7 @@ class WeatherAlert extends Command
 
     public function handle()
     {
-        app(WeatherService::class)->checkAllTriggers();
+        app(WeatherTriggerService::class)->checkAllTriggers();
         $this->info('Weather trigger check successfully!');
     }
 }

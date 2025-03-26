@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use App\Events\WeatherTriggerCreated;
-use App\Listeners\RunWeatherService;
+use App\Listeners\RunWeatherTriggerService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -21,7 +21,7 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
         ],
         WeatherTriggerCreated::class => [ 
-            RunWeatherService::class, 
+            RunWeatherTriggerService::class, 
         ],
     ];
 
