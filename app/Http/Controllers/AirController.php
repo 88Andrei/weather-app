@@ -2,72 +2,125 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Api\Air;
-use App\Api\Location;
-use App\Http\Controllers\ChartController;
+use App\Http\Requests\AirDataByTwoCitiesRequest;
+use App\Http\Requests\AirDataRequest;
+use App\Services\ChartService;
+use App\Services\CityService;
+use Illuminate\Support\Facades\Cache;
 
 class AirController extends Controller
 {
-  private $airAPI;
-  private $chart;
+  protected $chartService;
+  protected $cityService;
+  protected $defaultLocation;
+  protected $defaultStart;
+  protected $defaultEnd;
+  protected $cacheTime;
 
-  public function __construct()
+  public function __construct(ChartService $chartService, CityService $cityService)
   {
-    $this->airAPI = new Air;
-    $this->chart = new ChartController;
+    $this->chartService = $chartService;
+    $this->cityService = $cityService;
+
+    $this->defaultLocation = (object)[
+      //Dortmund
+      'lat' => 51.51661,
+      'lng' => 7.45829,
+    ];
+    $this->defaultStart = strtotime('today');
+    $this->defaultEnd = strtotime('tomorrow') - 1;
+    $this->cacheTime = config('cache.cache_time_for_air');
   }
 
-  public function index()
+  public function index(): \Illuminate\Contracts\View\View
   {
-    $airData = $this->airAPI->location('Dortmund')->start('1703631600')->end('1703718000')->getAll();
-    $airChart = $this->chart->getAirChart($airData->list);
+    $airData = $this->getAirData($this->defaultLocation, $this->defaultStart, $this->defaultEnd);
+    $chart = $this->getChartData($airData, $this->defaultStart, $this->defaultEnd);
 
     return view('air' , [
-      'airDatas' => $airData->list,
-      'chart' => $airChart,
+      'airData' => $airData->list,
+      'chart' => $chart,
     ]);
   }
 
-  public function getHistAirData(Request $request)
+  public function airDataByCity(AirDataRequest $request): \Illuminate\Contracts\View\View
   {
     $city = $request->city;
     $start = strtotime($request->dateFrom);
     $end = strtotime($request->dateTo . ' 23:59:59');
 
-    $airData = $this->airAPI->location($city)->start($start)->end($end)->getAll();
-    $airChart = $this->chart->getAirChart($airData->list);
+    $cityData = $this->cityService->getCityData($city);
+
+    // If there are several cities, return the view
+    if ($cityData->count() > 1) {
+      return $this->cityService->handleMultipleCities($cityData, [
+        'dateFrom' => $request->dateFrom,
+        'dateTo' => $request->dateTo,
+        'actionRoute' => 'air_in_city',
+        'type' => 'air',
+      ]);
+    }
+
+    $coord = $this->cityService->getCoordinates($cityData);
+
+    $airData = $this->getAirData($coord, $start, $end);
+    $airChart = $this->getChartData($airData, $start, $end);
 
     return view('air-in-city' , [
       'airDatas' => $airData->list,
-      'cityTitle' => $airData->cityTitle,
+      'cityTitle' => $cityData->first()->title,
       'chart' => $airChart,
     ]);
   }
 
-  public function getHistAirDataOfCities(Request $request)
+  public function airDataByTwoCities(AirDataByTwoCitiesRequest $request): \Illuminate\Contracts\View\View
   {
     $city1 = $request->city1;
     $city2 = $request->city2;
     $start = strtotime($request->dateFrom);
     $end = strtotime($request->dateTo . ' 23:59:59');
 
-    $airData = $this->airAPI->location($city1)->start($start)->end($end)->getAll();
-    $airData1 = $this->airAPI->location($city2)->start($start)->end($end)->getAll();
+    $cityData1 = $this->cityService->getCityData($city1);
+    $cityData2 = $this->cityService->getCityData($city2);
 
-    for ($i=0; $i < count($airData1->list); $i++) {
-      $airData->list[$i]->components1 = $airData1->list[$i]->components;
-      $airData->list[$i]->main1 = $airData1->list[$i]->main;
-    }
-    $airDatas = $airData->list;
+    $coord1 = $this->cityService->getCoordinates($cityData1);
+    $coord2 = $this->cityService->getCoordinates($cityData2);
 
-    $airChart = $this->chart->getAirChartFor2Cities($airDatas);
+    $cityTitle1 = $cityData1->first()->title;
+    $cityTitle2 = $cityData2->first()->title;
+    
+    $airDataCity1 = $this->getAirData($coord1, $start,  $end);
+    $airDataCity2 = $this->getAirData($coord2, $start,  $end);
+    $airDatas = array_map(null, $airDataCity1->list, $airDataCity2->list);
 
-    return view('air-in-cities' , [
-      'airDatas' => $airDatas,
-      'cityTitle1' => $airData->cityTitle,
-      'cityTitle2' => $airData1->cityTitle,
-      'chart' => $airChart,
-    ]);
+    $chart = $this->chartService->getAirChartFor2Cities($airDataCity1->list, $airDataCity2->list);
+
+    return view('air-in-cities' , compact('cityTitle1', 'cityTitle2', 'chart', 'airDatas'));
+  }
+
+  private function getAirData($coord, int $start, int $end): object
+  {
+    $cacheKey = "air_data_lat" . $coord->lat . "_lon" . $coord->lng . '_start_' . $start . '_end_' . $end;
+
+    $airData = Cache::remember(
+      $cacheKey, 
+      $this->cacheTime,  
+      fn() => Air::history()->location($coord)->start($start)->end($end)->getAll()
+    );
+
+    return $airData;
+  }
+
+  private function getChartData(object $airData, int $start, int $end): array
+  {
+    $cacheKey = "air_location_chart_lat_{$airData->coord->lat}_lon_{$airData->coord->lat}_start{$start}_end{$end}";
+    $chart = Cache::remember(
+      $cacheKey, 
+      $this->cacheTime, 
+      fn() => $this->chartService->getAirChartForCity($airData->list)
+    );
+
+    return $chart;
   }
 }

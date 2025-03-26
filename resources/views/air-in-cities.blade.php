@@ -5,12 +5,12 @@
       </h2>
   </x-slot>
 
-    <div class="container">
-      <h1>Air pollution in {{$cityTitle1}}(#1) and {{$cityTitle2}}(#2)</h1>
+    <div class="container pt-4">
+      <h1>Air pollution in {{ $cityTitle1 }}(#1) and {{ $cityTitle2 }}(#2)</h1>
       <div class="row">
         <x-chart>
-          <x-slot name="axisX">data-axis-x ="{{json_encode($chart['x'])}}"</x-slot>
-          <x-slot name="axisYs">data-axis-ys="{{json_encode($chart['Ys'])}}"</x-slot>
+          <x-slot name="axisX">data-axis-x ="{{ json_encode($chart['x']) }}"</x-slot>
+          <x-slot name="axisYs">data-axis-ys="{{ json_encode($chart['Ys']) }}"</x-slot>
         </x-chart>
         <table class="table table-striped table-hover table-bordered">
           <thead class="thead-light">
@@ -29,50 +29,49 @@
              </tr>
           </thead>
           <tbody>
-              @foreach($airDatas as $data)
+              @foreach($airDatas as [$data1, $data2])
                <tr>
-                 <th scope="row">{{date('H:i d.m.y', $data->dt)}}</th>
+                 <th scope="row">{{date('H:i d.m.y', $data1->dt)}}</th>
                  <td>
                    <p>#1</p>
                    <p>#2</p>
                  </td>
                  <td>
-                   <p>{{$data->main->aqi}}</p>
-                   <p>{{$data->main1->aqi}}</p>
+                   <p>{{$data1->main->aqi}}</p>
+                   <p>{{$data2->main->aqi}}</p>
                  </td>
                  <td>
-                   <p>{{$data->components->co}}</p>
-                   <p>{{$data->components1->co}}</p>
+                   <p>{{$data1->components->co}}</p>
+                   <p>{{$data2->components->co}}</p>
                   </td>
                  <td>
-                   <p>{{$data->components->no}}</p>
-                   <p>{{$data->components1->no}}</p>
+                   <p>{{$data1->components->no}}</p>
+                   <p>{{$data2->components->no}}</p>
                  </td>
                  <td>
-                   <p>{{$data->components->no2}}</p>
-                   <p>{{$data->components1->no2}}</p>
+                   <p>{{$data1->components->no2}}</p>
+                   <p>{{$data2->components->no2}}</p>
                  </td>
                  <td>
-                   <p>{{$data->components->o3}}</p>
-                   <p>{{$data->components1->o3}}</p>
+                   <p>{{$data1->components->o3}}</p>
+                   <p>{{$data2->components->o3}}</p>
                  </td>
                  <td>
-                   <p>{{$data->components->so2}}</p>
-                   <p>{{$data->components1->so2}}</p>
+                   <p>{{$data1->components->so2}}</p>
+                   <p>{{$data2->components->so2}}</p>
                  </td>
                  <td>
-                   <p>{{$data->components->nh3}}</p>
-                   <p>{{$data->components1->nh3}}</p>
+                   <p>{{$data1->components->nh3}}</p>
+                   <p>{{$data2->components->nh3}}</p>
                  </td>
                  <td>
-                   <p>{{$data->components->pm2_5}}</p>
-                   <p>{{$data->components1->pm2_5}}</p>
+                   <p>{{$data1->components->pm2_5}}</p>
+                   <p>{{$data2->components->pm2_5}}</p>
                  </td>
                  <td>
-                   <p>{{$data->components->pm10}}</p>
-                   <p>{{$data->components1->pm10}}</p>
+                   <p>{{$data1->components->pm10}}</p>
+                   <p>{{$data2->components->pm10}}</p>
                  </td>
-               </tr>
             @endforeach
           </tbody>
         </table>
