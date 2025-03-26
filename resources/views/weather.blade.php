@@ -5,12 +5,12 @@
       </h2>
   </x-slot>
 
-  <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 bg-light">
+  <div class="container pt-4">
       <div class="jumbotron">
           <div class="row">
               <!-- Form Column -->
               <div class="col-md-6">
-                  <form action="{{ route('location') }}" method="post">
+                  <form action="{{ route('weather_in_city') }}" method="post">
                       @csrf
                       <div class="form-group">
                           <label for="city" class="form-label">Enter City</label>
@@ -21,13 +21,6 @@
                           <select name="weatherType" class="form-control" id="weatherType">
                               <option value="daily">8 Day Weather Forecast</option>
                               <option value="hourly">48 Hours Weather</option>
-                          </select>
-                      </div>
-                      <div class="form-group">
-                          <label for="units" class="form-label">Select Units Type</label>
-                          <select name="units" class="form-control" id="units">
-                              <option value="metric">Metric</option>
-                              <option value="imperial">Imperial</option>
                           </select>
                       </div>
                       <button type="submit" class="btn btn-primary">Enter</button>

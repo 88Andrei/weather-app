@@ -5,7 +5,7 @@
       </h2>
   </x-slot>
 
-  <div class="container">
+  <div class="container pt-4">
     <h1>48 hour weather in {{$cityTitle}}</h1>
     <div class="row">
       <x-chart>
@@ -25,7 +25,7 @@
           </thead>
 
           <tbody>
-            @foreach($hourly as $hour)
+            @foreach($forecast as $hour)
              <tr>
                <td>{{date('H:i', $hour->dt)}}<br>{{date('jS \of M', $hour->dt)}}</td>
                <td>
