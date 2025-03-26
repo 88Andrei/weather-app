@@ -1,60 +1,52 @@
 <?php
 namespace App\Api;
 
-  class Location
+use App\Exceptions\ApiException;
+use Illuminate\Support\Facades\Http;
+
+class Location
 {
-  private $baseURL = "https://geocode.search.hereapi.com/v1/geocode";
+  private const BASE_URL = "https://geocode.search.hereapi.com/v1/geocode";
   private $apiKey;
-  private $city;
-  private $requestURL;
 
-  function __construct($city = null)
-    {
-      $this->apiKey = env('HERE_API_KEY');
-      $this->city = urlencode($city);
-      $this->requestURL = $this->baseURL . '?apiKey=' . $this->apiKey;
+  public function __construct()
+  {
+    $this->apiKey = config('services.hereapi.key');
+  }
+
+  public function getCityData($cityName): array
+  {
+    $city = urlencode($cityName);
+
+    $url = $this->buildURL($city);
+    $result = $this->sendRequest($url);
+
+    return $result;
+  }
+
+  private function sendRequest($url)
+  {
+    $response = Http::retry(2, 100)->get($url);
+
+
+    if (!$response->successful()) {
+      throw new ApiException("API request failed with status: " . $response->status());
+    }
+    
+    $cityData = json_decode($response)->items;
+
+    if (empty($cityData)) {
+      throw new ApiException("No data about the city. Check the city name or try again later");
     }
 
-    public function city($city)
-    {
-      return new self($city);
-    }
+    return $cityData;
 
-    public function parseResult($result)
-    {
-      return json_decode($result)->items;
-    }
+  }
 
-    public function getAll()
-    {
-      $requestURL = $this->bildURL();
-      $result = $this->sendRequest($requestURL);
-      return $this->parseResult($result);
-    }
+  private function buildURL($city)
+  {
+    $requestURL = self::BASE_URL . '?apiKey=' . $this->apiKey .'&q=' . $city;
 
-    public function getLocation()
-    {
-      $CityData = $this->getAll();
-      $location = $CityData[0]->position;
-
-      return $location;
-    }
-
-    private function bildURL()
-    {
-      $requestURL = $this->requestURL;
-
-      if($this->city != null){
-        $requestURL .= '&q=' . $this->city;
-      } else {
-        throw new \Exception("No location was passed", 1);
-      }
-      return $requestURL;
-    }
-
-    private function sendRequest($requestURL)
-    {
-      return file_get_contents($requestURL);
-    }
-
+    return $requestURL;
+  }
 }
