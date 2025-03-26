@@ -1,81 +1,94 @@
 <?php
 namespace App\Api;
 
-  class Weather
+use App\Exceptions\ApiException;
+use GuzzleHttp\Exception\RequestException;
+use Illuminate\Support\Facades\Http;
+
+class Weather
 {
   private $baseURL = 'https://api.openweathermap.org/data/3.0/onecall';
   private $apiKey;
 
-  private $location;
-  private $units;
+  private $coord = null;
+  private $units = null;
+  private $lang;
   private $defaultUnits = 'metric';
-  private $format;
-  private $requestURL;
+  private $defaultLang = 'en';
 
-
-   function __construct($locationData = null, $unitsName = null, $formatName = null)
+  public function __construct()
   {
-    $this->apiKey = env('OPENWEATHER_API_KEY');
-    $this->location = $locationData;
-    $this->units = $unitsName;
-    $this->format = $formatName;
-
-    $this->requestURL = $this->baseURL . '?appid=' . $this->apiKey;
+    $this->apiKey = config('services.openweather.key');;
   }
 
-  public function location($locationObj)
+  public function location(object $coord): self
   {
-    return new self($locationObj, $this->units, $this->format);
+    $this->coord = $coord;
+    return $this;
   }
 
-  public function units($unitsName)
+  public function units(string $units): self
   {
-    return new self($this->location, $unitsName, $this->format);
+    $this->units = $units;
+    return $this;
   }
 
-  public function getHourly()
+  public function language(string $lang): self
   {
-    return $this->getAll()->hourly;
-  }
-
-  public function getCurrent()
-  {
-    return $this->getAll()->current;
-  }
-
-  public function getDaily()
-  {
-    return $this->getAll()->daily;
+    $this->lang = $lang;
+    return $this;
   }
 
   public function getAll()
   {
-    $requestURL = $this->bildURL();
-    $result = $this->sendRequest($requestURL);
-    return json_decode($result);
+    $url = $this->buildURL();
+    try {
+      $response = Http::retry(2, 100)->get($url);
+      if ($response->successful()) {
+          $data = json_decode($response);
+
+          if (isset($data->hourly, $data->daily, $data->current)) {
+            return $data;
+        }
+        throw new ApiException("Incorrect data from Weathre API. Try again later");
+      }
+
+    } catch (RequestException $e) {
+      throw new ApiException("Request error: " . $e->getMessage());
+    }
   }
 
-  private function bildURL()
+  public function getHourly(): array
   {
-    $requestURL = $this->requestURL;
-
-    if($this->location != null){
-      $requestURL .= '&lat='. $this->location->lat .'&lon=' . $this->location->lng;
-    } else {
-      throw new \Exception("No location was passed", 1);
-    }
-
-    if($this->units != null){
-      $requestURL .= '&units=' . $this->units;
-    } else {
-      $requestURL .= '&units=' . $this->defaultUnits;
-    }
-
-    return $requestURL;
+    return $this->getAll()->hourly;
   }
 
-  private function sendRequest($requestURL)
+  public function getCurrent(): object
   {
-    return file_get_contents($requestURL);
+    return $this->getAll()->current;
+  }
+
+  public function getDaily(): array
+  {
+    return $this->getAll()->daily;
+  }
+
+  private function buildURL()
+  {
+    $baseURL = $this->baseURL;
+
+    if(!$this->coord){
+      throw new ApiException("No location was provided.");
+    } 
+
+    $params = [
+      'appid' => $this->apiKey,
+      'lat' => $this->coord->lat,
+      'lon' => $this->coord->lng,
+      'units' => $this->units ?? $this->defaultUnits,
+      'lang' => $this->lang ?? $this->defaultLang,
+    ];
+     
+    return $baseURL . '?' .  http_build_query($params);
   }
 }
