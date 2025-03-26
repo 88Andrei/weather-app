@@ -5,7 +5,7 @@
       </h2>
   </x-slot>
 
-  <div class="container">
+  <div class="container pt-4">
     <h1>Air pollution in {{$cityTitle}}</h1>
     <div class="row">
       <div class="col-md-12">
