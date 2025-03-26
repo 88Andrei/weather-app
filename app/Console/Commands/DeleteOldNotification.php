@@ -22,6 +22,6 @@ class DeleteOldNotification extends Command
         $notifications = DatabaseNotification::where('type', 'App\Notifications\WeatherAlert')->get();
         $notifications->markAsRead();
 
-        $this->info('Weather trigger delete successfully!');
+        $this->info('Old notifications delete successfully!');
     }
 }
