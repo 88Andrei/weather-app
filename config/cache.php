@@ -107,4 +107,13 @@ return [
 
     'prefix' => env('CACHE_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_').'_cache'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Default ceche time for controllers
+    |--------------------------------------------------------------------------
+    */
+    'cache_time_for_weather' => now()->addHours(1),
+    'cache_time_for_air' => now()->addHours(3),
+    'cache_time_for_city' => now()->addDay(12),
+
 ];
