@@ -3,31 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Api\Weather;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
 class DashboardController extends Controller
 {
     protected $weatherAPI;
-    protected $cache;
-    protected $weatherCacheTime = 24;
+    protected $cacheTime;
 
     public function __construct(Weather $weatherAPI)
     {
         $this->weatherAPI = $weatherAPI;
+        $this->cacheTime = config('cache.cache_time_for_weather');
     }
 
-    public function home()
+    public function home(): \Illuminate\Contracts\View\View
     {
       $user = Auth::user();
       
       $location = $user->locations->first();
 
-      $hourlyWeather = Cache::remember(
-          'hourlyWeather_user_{$user->id}', 
-          now()->addHours($this->weatherCacheTime), 
-          fn() => $this->weatherAPI->location($location)->getHourly()
-        );
+      $hourlyWeather = $this->getHourlyWeather($location, $user->id);
         
       $sixHourlyWeather = collect($hourlyWeather)
         ->filter(fn ($forecast) => $forecast->dt >= time())
@@ -35,5 +32,14 @@ class DashboardController extends Controller
         ->toArray();
       
       return view('dashboard.home', compact('location', 'sixHourlyWeather'));
+    }
+
+    private function getHourlyWeather(object $location, $userId): array
+    {
+      return Cache::remember(
+        "hourlyWeather_user_{$userId}", 
+        $this->cacheTime, 
+        fn() => $this->weatherAPI->location($location)->getHourly()
+      );
     }
 }
