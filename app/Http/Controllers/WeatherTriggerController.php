@@ -12,8 +12,9 @@ class WeatherTriggerController extends Controller
 {
     public function index()
     {
-        $triggers = WeatherTrigger::where('user_id', Auth::id())->with('location')->get();
-        $locations = $triggers->pluck('location')->unique('id');
+        $userId = Auth::id();
+        $triggers = WeatherTrigger::where('user_id', $userId)->get();
+        $locations = Location::where('user_id', $userId)->get();
         
         return view('dashboard/triggers/triggers' , compact('triggers', 'locations'));
     }
