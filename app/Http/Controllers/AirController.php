@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Api\Air;
 use App\Http\Requests\AirDataByTwoCitiesRequest;
 use App\Http\Requests\AirDataRequest;
+use App\Services\AirDataService;
 use App\Services\ChartService;
 use App\Services\CityService;
 use Illuminate\Support\Facades\Cache;
@@ -13,15 +14,17 @@ class AirController extends Controller
 {
   protected $chartService;
   protected $cityService;
+  protected $airDataService;
   protected $defaultLocation;
   protected $defaultStart;
   protected $defaultEnd;
   protected $cacheTime;
 
-  public function __construct(ChartService $chartService, CityService $cityService)
+  public function __construct(ChartService $chartService, CityService $cityService, AirDataService $airDataService)
   {
     $this->chartService = $chartService;
     $this->cityService = $cityService;
+    $this->airDataService = $airDataService;
 
     $this->defaultLocation = (object)[
       //Dortmund
@@ -106,7 +109,8 @@ class AirController extends Controller
     $airData = Cache::remember(
       $cacheKey, 
       $this->cacheTime,  
-      fn() => Air::history()->location($coord)->start($start)->end($end)->getAll()
+      // fn() => Air::history()->location($coord)->start($start)->end($end)->getAll()
+      fn() => $this->airDataService->getAirData($coord, $start, $end)
     );
 
     return $airData;
